@@ -298,12 +298,17 @@ function showGrid() {
   }
 
   noStroke();
-  fill(0, 0, 0, 120);
-  rect(15, 15, 80, 32, 8);
-
-  fill(200, 200, 220);
-  textSize(13);
-  text("← BACK", 55, 31);
+  fill(0, 0, 0, 180);
+  rect(12, 12, 100, 36, 10);
+  stroke(255, 200, 50, 180);
+  strokeWeight(1.5);
+  noFill();
+  rect(12, 12, 100, 36, 10);
+  noStroke();
+  fill(255, 200, 50);
+  textSize(14);
+  textStyle(BOLD);
+  text("← BACK", 62, 30);
 }
 
 function showGallery() {
@@ -312,25 +317,26 @@ function showGallery() {
 
   background(15, 15, 25);
 
-  drawScooters();
-
+  // Draw the photo first
   var img = images[currentIndex];
-
   imageMode(CENTER);
   image(img, width / 2, height / 2, width * 0.8, height * 0.8);
   imageMode(CORNER);
 
-  noStroke();
-  fill(0, 0, 0, 120);
-  rect(width / 2 - 50, height - 40, 100, 28, 8);
+  // Draw scooters on top of the photo so they're always visible
+  drawScooters();
 
+  // Counter badge
+  noStroke();
+  fill(0, 0, 0, 160);
+  rect(width / 2 - 50, height - 40, 100, 28, 8);
   fill(255);
   textSize(14);
   textStyle(NORMAL);
   text((currentIndex + 1) + " / " + images.length, width / 2, height - 26);
 
+  // Next thumbnail
   var nextIndex = currentIndex + 1;
-
   if (nextIndex < images.length) {
     var thumbW = 110;
     var thumbH = 80;
@@ -353,13 +359,19 @@ function showGallery() {
     text("NEXT →", thumbX + thumbW / 2, thumbY + thumbH + 12);
   }
 
+  // Prominent back button
   noStroke();
-  fill(0, 0, 0, 120);
-  rect(15, 15, 80, 32, 8);
-
-  fill(200, 200, 220);
-  textSize(13);
-  text("← BACK", 55, 31);
+  fill(0, 0, 0, 180);
+  rect(12, 12, 100, 36, 10);
+  stroke(255, 200, 50, 180);
+  strokeWeight(1.5);
+  noFill();
+  rect(12, 12, 100, 36, 10);
+  noStroke();
+  fill(255, 200, 50);
+  textSize(14);
+  textStyle(BOLD);
+  text("← BACK", 62, 30);
 }
 
 function mousePressed() {
@@ -378,7 +390,8 @@ function mousePressed() {
     }
 
   } else if (screen === "grid") {
-    if (mouseX > 15 && mouseX < 95 && mouseY > 15 && mouseY < 47) {
+    // Back button
+    if (mouseX > 12 && mouseX < 112 && mouseY > 12 && mouseY < 48) {
       screen = "menu";
       return;
     }
@@ -395,7 +408,8 @@ function mousePressed() {
     }
 
   } else if (screen === "gallery") {
-    if (mouseX > 15 && mouseX < 95 && mouseY > 15 && mouseY < 47) {
+    // Back button
+    if (mouseX > 12 && mouseX < 112 && mouseY > 12 && mouseY < 48) {
       screen = "grid";
       return;
     }
