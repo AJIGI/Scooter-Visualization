@@ -1,28 +1,27 @@
-let screen = "loading";
-let particles = [];
-let images = [];
-let currentIndex = 0;
-let imageFiles = [
+// ── State ────────────────────────────────────────────────────────────────────
+var screen = "loading";
+var particles = [];
+var images = [];
+var currentIndex = 0;
+var imageFiles = [
   "IMG_2858.jpeg",
   "IMG_2859.jpeg",
   "IMG_2861.jpg",
   "IMG_2868.jpg"
 ];
-let orbitAngle = 0;
-let tableauDiv = null;
+var orbitAngle = 0;
+var tableauDiv = null;
 
-function loadImageAsync(path) {
-  return new Promise((resolve, reject) => {
-    loadImage(
-      path,
-      img => resolve(img),
-      err => reject(err)
-    );
-  });
+// ── Preload (p5 built-in — runs before setup, no async needed) ───────────────
+function preload() {
+  for (var i = 0; i < imageFiles.length; i++) {
+    images.push(loadImage(imageFiles[i]));
+  }
 }
 
-async function setup() {
-  let canvas = createCanvas(windowWidth, windowHeight);
+// ── Setup ────────────────────────────────────────────────────────────────────
+function setup() {
+  var canvas = createCanvas(windowWidth, windowHeight);
   canvas.position(0, 0);
   canvas.style("position", "fixed");
   canvas.style("z-index", "0");
@@ -30,21 +29,15 @@ async function setup() {
 
   textAlign(CENTER, CENTER);
 
-  for (let i = 0; i < 80; i++) {
+  for (var i = 0; i < 80; i++) {
     particles.push(new Particle());
-  }
-
-  try {
-    images = await Promise.all(imageFiles.map(file => loadImageAsync(file)));
-    console.log("Loaded images:", imageFiles);
-  } catch (err) {
-    console.error("One or more images failed to load:", err);
   }
 
   createTableauOverlay();
   screen = "start";
 }
 
+// ── Tableau overlay ──────────────────────────────────────────────────────────
 function createTableauOverlay() {
   tableauDiv = createDiv("");
   tableauDiv.id("tableau-overlay");
@@ -63,126 +56,79 @@ function createTableauOverlay() {
   tableauDiv.style("box-sizing", "border-box");
   tableauDiv.style("pointer-events", "auto");
 
-  tableauDiv.html(`
-    <div style="width:100%;max-width:1100px;margin:0 auto;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;flex-wrap:wrap;">
-        <button onclick="goBackFromTableau()" style="
-          background:rgba(0,0,0,0.6);
-          color:#c8c8dc;
-          border:none;
-          padding:8px 18px;
-          border-radius:8px;
-          font-size:14px;
-          cursor:pointer;
-          font-family:monospace;
-        ">← BACK</button>
-
-        <h2 style="color:#ffc832;font-family:monospace;margin:0;font-size:22px;">📊 Tableau Visualizations</h2>
-
-        <div style="width:80px;"></div>
-      </div>
-
-      <p style="color:#c8c8dc;font-family:monospace;text-align:center;margin-bottom:24px;font-size:14px;">
-        Scooter data visualizations — try interacting directly below. If embedding blocks interaction, use the open-in-new-tab buttons.
-      </p>
-
-      <div style="margin-bottom:40px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Radial Chart</h3>
-          <a
-            href="https://public.tableau.com/views/Radial_17754458389600/Radial?:showVizHome=no"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="
-              background:#ffc832;
-              color:#111;
-              text-decoration:none;
-              font-family:monospace;
-              font-size:13px;
-              font-weight:bold;
-              padding:8px 14px;
-              border-radius:8px;
-              display:inline-block;
-            "
-          >Open frame in new tab ↗</a>
-        </div>
-
-        <iframe
-          src="https://public.tableau.com/views/Radial_17754458389600/Radial?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"
-          width="100%"
-          height="600px"
-          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <div style="margin-bottom:40px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Scooter Data</h3>
-          <a
-            href="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft/Sheet1?:showVizHome=no"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="
-              background:#ffc832;
-              color:#111;
-              text-decoration:none;
-              font-family:monospace;
-              font-size:13px;
-              font-weight:bold;
-              padding:8px 14px;
-              border-radius:8px;
-              display:inline-block;
-            "
-          >Open frame in new tab ↗</a>
-        </div>
-
-        <iframe
-          src="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"
-          width="100%"
-          height="600px"
-          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <div style="margin-bottom:40px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Building Scooter Parking Comparison</h3>
-          <a
-            href="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:showVizHome=no"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="
-              background:#ffc832;
-              color:#111;
-              text-decoration:none;
-              font-family:monospace;
-              font-size:13px;
-              font-weight:bold;
-              padding:8px 14px;
-              border-radius:8px;
-              display:inline-block;
-            "
-          >Open frame in new tab ↗</a>
-        </div>
-
-        <iframe
-          src="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"
-          width="100%"
-          height="600px"
-          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"
-          allowfullscreen>
-        </iframe>
-      </div>
-    </div>
-  `);
+  // FIX: replaced CSS `gap` (not supported in Chrome 87 flexbox) with
+  // equivalent margins on the inner elements.
+  // NOTE: onclick uses window.goBackFromTableau so it resolves at call-time,
+  // not at parse-time — safe even though the function is defined below.
+  tableauDiv.html('\
+    <div style="width:100%;max-width:1100px;margin:0 auto;">\
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;">\
+        <button onclick="window.goBackFromTableau()" style="\
+          background:rgba(0,0,0,0.6);\
+          color:#c8c8dc;\
+          border:none;\
+          padding:8px 18px;\
+          border-radius:8px;\
+          font-size:14px;\
+          cursor:pointer;\
+          font-family:monospace;\
+          margin-right:12px;\
+        ">\u2190 BACK</button>\
+        <h2 style="color:#ffc832;font-family:monospace;margin:0;">\uD83D\uDCCA Tableau Visualizations</h2>\
+        <div style="width:80px;"></div>\
+      </div>\
+      <p style="color:#c8c8dc;font-family:monospace;text-align:center;margin-bottom:24px;font-size:14px;">\
+        Scooter data visualizations \u2014 try interacting directly below. If embedding blocks interaction, use the open-in-new-tab buttons.\
+      </p>\
+      <div style="margin-bottom:40px;">\
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;">\
+          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Radial Chart</h3>\
+          <a href="https://public.tableau.com/views/Radial_17754458389600/Radial?:showVizHome=no"\
+             target="_blank" rel="noopener noreferrer"\
+             style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
+        </div>\
+        <iframe src="https://public.tableau.com/views/Radial_17754458389600/Radial?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"\
+          width="100%" height="600px"\
+          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"\
+          allowfullscreen></iframe>\
+      </div>\
+      <div style="margin-bottom:40px;">\
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;">\
+          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Scooter Data</h3>\
+          <a href="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft/Sheet1?:showVizHome=no"\
+             target="_blank" rel="noopener noreferrer"\
+             style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
+        </div>\
+        <iframe src="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"\
+          width="100%" height="600px"\
+          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"\
+          allowfullscreen></iframe>\
+      </div>\
+      <div style="margin-bottom:40px;">\
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;">\
+          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Building Scooter Parking Comparison</h3>\
+          <a href="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:showVizHome=no"\
+             target="_blank" rel="noopener noreferrer"\
+             style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
+        </div>\
+        <iframe src="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"\
+          width="100%" height="600px"\
+          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"\
+          allowfullscreen></iframe>\
+      </div>\
+    </div>\
+  ');
 }
+
+// Exposed on window so the inline onclick in the HTML string can reach it
+window.goBackFromTableau = function () {
+  hideTableauOverlay();
+  screen = "menu";
+};
 
 function showTableauOverlay() {
   tableauDiv.style("display", "flex");
-
-  let canvases = document.getElementsByTagName("canvas");
+  var canvases = document.getElementsByTagName("canvas");
   if (canvases.length > 0) {
     canvases[0].style.pointerEvents = "none";
   }
@@ -190,18 +136,13 @@ function showTableauOverlay() {
 
 function hideTableauOverlay() {
   tableauDiv.style("display", "none");
-
-  let canvases = document.getElementsByTagName("canvas");
+  var canvases = document.getElementsByTagName("canvas");
   if (canvases.length > 0) {
     canvases[0].style.pointerEvents = "auto";
   }
 }
 
-function goBackFromTableau() {
-  hideTableauOverlay();
-  screen = "menu";
-}
-
+// ── Draw dispatcher ──────────────────────────────────────────────────────────
 function draw() {
   background(15, 15, 25);
 
@@ -224,30 +165,31 @@ function draw() {
   }
 }
 
+// ── Start screen ─────────────────────────────────────────────────────────────
 function showStartScreen() {
-  for (let p of particles) {
-    p.update();
-    p.draw();
+  for (var i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
   }
 
   noStroke();
-  let glowSize = 300 + sin(frameCount * 0.03) * 20;
-  for (let i = 5; i > 0; i--) {
-    fill(255, 180, 0, 8 * i);
-    ellipse(width / 2, height / 2 - 40, glowSize * i * 0.4, glowSize * i * 0.2);
+  var glowSize = 300 + sin(frameCount * 0.03) * 20;
+  for (var j = 5; j > 0; j--) {
+    fill(255, 180, 0, 8 * j);
+    ellipse(width / 2, height / 2 - 40, glowSize * j * 0.4, glowSize * j * 0.2);
   }
 
-  let cx = width / 2;
-  let cy = height / 2 - 40;
-  let rx = glowSize * 0.38;
-  let ry = glowSize * 0.19;
+  var cx = width / 2;
+  var cy = height / 2 - 40;
+  var rx = glowSize * 0.38;
+  var ry = glowSize * 0.19;
   orbitAngle += 0.02;
 
-  let sx = cx + rx * cos(orbitAngle);
-  let sy = cy + ry * sin(orbitAngle);
-  let tx = -rx * sin(orbitAngle);
-  let ty = ry * cos(orbitAngle);
-  let angle = atan2(ty, tx);
+  var sx = cx + rx * cos(orbitAngle);
+  var sy = cy + ry * sin(orbitAngle);
+  var tx = -rx * sin(orbitAngle);
+  var ty = ry * cos(orbitAngle);
+  var angle = atan2(ty, tx);
 
   push();
   translate(sx, sy);
@@ -257,7 +199,7 @@ function showStartScreen() {
   textAlign(CENTER, CENTER);
   textStyle(NORMAL);
   noStroke();
-  text("🛴", 0, 0);
+  text("\uD83D\uDED4", 0, 0); // 🛴
   pop();
 
   textSize(32);
@@ -273,20 +215,21 @@ function showStartScreen() {
 
   stroke(255, 180, 0, 150);
   strokeWeight(1);
-  let lineW = 300;
+  var lineW = 300;
   line(width / 2 - lineW / 2, height / 2 + 55, width / 2 + lineW / 2, height / 2 + 55);
   noStroke();
 
-  let pulseAlpha = map(sin(frameCount * 0.05), -1, 1, 80, 255);
+  var pulseAlpha = map(sin(frameCount * 0.05), -1, 1, 80, 255);
   fill(255, 255, 255, pulseAlpha);
   textSize(14);
   text("CLICK ANYWHERE TO BEGIN", width / 2, height / 2 + 90);
 }
 
+// ── Menu screen ───────────────────────────────────────────────────────────────
 function showMenuScreen() {
-  for (let p of particles) {
-    p.update();
-    p.draw();
+  for (var i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
   }
 
   noStroke();
@@ -296,12 +239,12 @@ function showMenuScreen() {
   textAlign(CENTER, CENTER);
   text("What would you like to explore?", width / 2, height / 2 - 130);
 
-  let btn1 = getMenuBtn1();
-  let btn2 = getMenuBtn2();
+  var btn1 = getMenuBtn1();
+  var btn2 = getMenuBtn2();
 
   drawMenuButton(
     btn1,
-    "📸",
+    "\uD83D\uDCF8", // 📸
     "View Photos",
     "Browse our scooter pictures",
     mouseX > btn1.x && mouseX < btn1.x + btn1.w && mouseY > btn1.y && mouseY < btn1.y + btn1.h
@@ -309,7 +252,7 @@ function showMenuScreen() {
 
   drawMenuButton(
     btn2,
-    "📊",
+    "\uD83D\uDCCA", // 📊
     "View Data",
     "Explore Tableau visualizations",
     mouseX > btn2.x && mouseX < btn2.x + btn2.w && mouseY > btn2.y && mouseY < btn2.y + btn2.h
@@ -353,69 +296,73 @@ function drawMenuButton(btn, emoji, label, sublabel, hovered) {
 }
 
 function getMenuBtn1() {
-  let btnW = min(240, width * 0.35);
-  let btnH = 160;
-  let gap = 40;
-  let totalW = btnW * 2 + gap;
-  let startX = (width - totalW) / 2;
+  // FIX: use Math.min() instead of p5's min() for non-array two-argument form
+  var btnW = Math.min(240, width * 0.35);
+  var btnH = 160;
+  var gap = 40;
+  var totalW = btnW * 2 + gap;
+  var startX = (width - totalW) / 2;
   return { x: startX, y: height / 2 - btnH / 2, w: btnW, h: btnH };
 }
 
 function getMenuBtn2() {
-  let btnW = min(240, width * 0.35);
-  let btnH = 160;
-  let gap = 40;
-  let totalW = btnW * 2 + gap;
-  let startX = (width - totalW) / 2;
+  // FIX: use Math.min() instead of p5's min() for non-array two-argument form
+  var btnW = Math.min(240, width * 0.35);
+  var btnH = 160;
+  var gap = 40;
+  var totalW = btnW * 2 + gap;
+  var startX = (width - totalW) / 2;
   return { x: startX + btnW + gap, y: height / 2 - btnH / 2, w: btnW, h: btnH };
 }
 
+// ── Scooter ticker ────────────────────────────────────────────────────────────
 function drawScooters() {
-  let speed = 1.5;
-  let count = 6;
-  let spacing = width / count;
+  var speed = 1.5;
+  var count = 6;
+  var spacing = width / count;
 
   textStyle(NORMAL);
   textAlign(CENTER, CENTER);
   textSize(28);
 
-  for (let i = 0; i < count; i++) {
-    let x = ((frameCount * -speed + i * spacing) % (width + 60) + width + 60) % (width + 60);
-    text("🛴", x, 78);
+  for (var i = 0; i < count; i++) {
+    var x = ((frameCount * -speed + i * spacing) % (width + 60) + width + 60) % (width + 60);
+    text("\uD83D\uDED4", x, 78);
   }
 
-  for (let i = 0; i < count; i++) {
-    let x = ((frameCount * speed + i * spacing) % (width + 60) + width + 60) % (width + 60);
+  for (var j = 0; j < count; j++) {
+    var xj = ((frameCount * speed + j * spacing) % (width + 60) + width + 60) % (width + 60);
     push();
-    translate(x, height - 30);
+    translate(xj, height - 30);
     scale(-1, 1);
-    text("🛴", 0, 0);
+    text("\uD83D\uDED4", 0, 0);
     pop();
   }
 }
 
+// ── Grid helpers ─────────────────────────────────────────────────────────────
 function getGridRects() {
-  let rects = [];
-  let cols = 2;
-  let rows = 2;
-  let padX = 60;
-  let padY = 110;
-  let gapX = 30;
-  let gapY = 30;
-  let cellW = (width - padX * 2 - gapX) / cols;
-  let cellH = (height - padY * 2 - gapY) / rows;
+  var rects = [];
+  var cols = 2;
+  var padX = 60;
+  var padY = 110;
+  var gapX = 30;
+  var gapY = 30;
+  var cellW = (width - padX * 2 - gapX) / cols;
+  var cellH = (height - padY * 2 - gapY) / 2;
 
-  for (let i = 0; i < 4; i++) {
-    let col = i % cols;
-    let row = floor(i / cols);
-    let x = padX + col * (cellW + gapX);
-    let y = padY + row * (cellH + gapY);
-    rects.push({ x, y, w: cellW, h: cellH });
+  for (var i = 0; i < 4; i++) {
+    var col = i % cols;
+    var row = Math.floor(i / cols);
+    var x = padX + col * (cellW + gapX);
+    var y = padY + row * (cellH + gapY);
+    rects.push({ x: x, y: y, w: cellW, h: cellH });
   }
 
   return rects;
 }
 
+// ── Grid screen ───────────────────────────────────────────────────────────────
 function showGrid() {
   if (images.length === 0) return;
 
@@ -428,15 +375,16 @@ function showGrid() {
   textAlign(CENTER, CENTER);
   text("Select a Photo", width / 2, 50);
 
-  let rects = getGridRects();
+  var rects = getGridRects();
 
-  for (let i = 0; i < min(images.length, 4); i++) {
-    let r = rects[i];
-    let img = images[i];
+  // FIX: use Math.min() instead of p5's min() for non-array two-argument form
+  for (var i = 0; i < Math.min(images.length, 4); i++) {
+    var r = rects[i];
+    var img = images[i];
 
-    let imgAspect = img.width / img.height;
-    let cellAspect = r.w / r.h;
-    let drawW, drawH, offX, offY;
+    var imgAspect = img.width / img.height;
+    var cellAspect = r.w / r.h;
+    var drawW, drawH, offX, offY;
 
     if (imgAspect > cellAspect) {
       drawW = r.w;
@@ -453,7 +401,7 @@ function showGrid() {
     fill(0, 0, 0, 100);
     rect(r.x + 6, r.y + 6, r.w, r.h, 10);
 
-    let hovered = mouseX > r.x && mouseX < r.x + r.w && mouseY > r.y && mouseY < r.y + r.h;
+    var hovered = mouseX > r.x && mouseX < r.x + r.w && mouseY > r.y && mouseY < r.y + r.h;
 
     image(img, r.x + offX, r.y + offY, drawW, drawH);
 
@@ -487,18 +435,19 @@ function showGrid() {
   fill(200, 200, 220);
   textSize(13);
   textAlign(CENTER, CENTER);
-  text("← BACK", 55, 31);
+  text("\u2190 BACK", 55, 31);
 }
 
+// ── Gallery screen ────────────────────────────────────────────────────────────
 function showGallery() {
   if (images.length === 0) return;
   if (currentIndex >= images.length) currentIndex = 0;
 
-  let img = images[currentIndex];
-  let aspectRatio = img.width / img.height;
-  let maxW = width * 0.85;
-  let maxH = height * 0.85;
-  let drawW, drawH;
+  var img = images[currentIndex];
+  var aspectRatio = img.width / img.height;
+  var maxW = width * 0.85;
+  var maxH = height * 0.85;
+  var drawW, drawH;
 
   if (maxW / aspectRatio <= maxH) {
     drawW = maxW;
@@ -508,8 +457,8 @@ function showGallery() {
     drawW = maxH * aspectRatio;
   }
 
-  let x = (width - drawW) / 2;
-  let y = (height - drawH) / 2;
+  var x = (width - drawW) / 2;
+  var y = (height - drawH) / 2;
   image(img, x, y, drawW, drawH);
 
   noStroke();
@@ -519,14 +468,14 @@ function showGallery() {
   textSize(14);
   textStyle(NORMAL);
   textAlign(CENTER, CENTER);
-  text(`${currentIndex + 1} / ${images.length}`, width / 2, height - 26);
+  text((currentIndex + 1) + " / " + images.length, width / 2, height - 26);
 
-  let nextIndex = currentIndex + 1;
+  var nextIndex = currentIndex + 1;
   if (nextIndex < images.length) {
-    let thumbW = 110;
-    let thumbH = 80;
-    let thumbX = width - thumbW - 20;
-    let thumbY = 20;
+    var thumbW = 110;
+    var thumbH = 80;
+    var thumbX = width - thumbW - 20;
+    var thumbY = 20;
 
     noStroke();
     fill(0, 0, 0, 100);
@@ -543,7 +492,7 @@ function showGallery() {
     fill(255, 200, 50);
     textSize(11);
     textAlign(CENTER, CENTER);
-    text("NEXT →", thumbX + thumbW / 2, thumbY + thumbH + 12);
+    text("NEXT \u2192", thumbX + thumbW / 2, thumbY + thumbH + 12);
   }
 
   noStroke();
@@ -552,15 +501,17 @@ function showGallery() {
   fill(200, 200, 220);
   textSize(13);
   textAlign(CENTER, CENTER);
-  text("← BACK", 55, 31);
+  text("\u2190 BACK", 55, 31);
 }
 
+// ── Mouse handler ─────────────────────────────────────────────────────────────
 function mousePressed() {
   if (screen === "start") {
     screen = "menu";
+
   } else if (screen === "menu") {
-    let btn1 = getMenuBtn1();
-    let btn2 = getMenuBtn2();
+    var btn1 = getMenuBtn1();
+    var btn2 = getMenuBtn2();
 
     if (mouseX > btn1.x && mouseX < btn1.x + btn1.w && mouseY > btn1.y && mouseY < btn1.y + btn1.h) {
       screen = "grid";
@@ -568,28 +519,30 @@ function mousePressed() {
       screen = "tableau";
       showTableauOverlay();
     }
+
   } else if (screen === "grid") {
     if (mouseX > 15 && mouseX < 95 && mouseY > 15 && mouseY < 47) {
       screen = "menu";
       return;
     }
 
-    let rects = getGridRects();
-    for (let i = 0; i < min(rects.length, images.length); i++) {
-      let r = rects[i];
+    var rects = getGridRects();
+    for (var i = 0; i < Math.min(rects.length, images.length); i++) {
+      var r = rects[i];
       if (mouseX > r.x && mouseX < r.x + r.w && mouseY > r.y && mouseY < r.y + r.h) {
         currentIndex = i;
         screen = "gallery";
         return;
       }
     }
+
   } else if (screen === "gallery") {
-    let nextIndex = currentIndex + 1;
+    var nextIndex = currentIndex + 1;
     if (nextIndex < images.length) {
-      let thumbW = 110;
-      let thumbH = 80;
-      let thumbX = width - thumbW - 20;
-      let thumbY = 20;
+      var thumbW = 110;
+      var thumbH = 80;
+      var thumbX = width - thumbW - 20;
+      var thumbY = 20;
 
       if (mouseX > thumbX && mouseX < thumbX + thumbW && mouseY > thumbY && mouseY < thumbY + thumbH) {
         currentIndex = nextIndex;
@@ -603,16 +556,14 @@ function mousePressed() {
   }
 }
 
+// ── Window resize ─────────────────────────────────────────────────────────────
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-class Particle {
-  constructor() {
-    this.reset();
-  }
-
-  reset() {
+// ── Particle class ────────────────────────────────────────────────────────────
+function Particle() {
+  this.reset = function () {
     this.x = random(width);
     this.y = random(height);
     this.size = random(1, 3);
@@ -622,21 +573,22 @@ class Particle {
     this.col = random() > 0.5
       ? color(255, 180, 0, this.pulseAlpha)
       : color(180, 180, 255, this.pulseAlpha);
-  }
+  };
 
-  update() {
+  this.update = function () {
     this.y += this.speedY;
     this.x += this.speedX;
-
     if (this.y < 0 || this.x < 0 || this.x > width) {
       this.reset();
       this.y = height;
     }
-  }
+  };
 
-  draw() {
+  this.draw = function () {
     noStroke();
     fill(this.col);
     ellipse(this.x, this.y, this.size);
-  }
+  };
+
+  this.reset();
 }
