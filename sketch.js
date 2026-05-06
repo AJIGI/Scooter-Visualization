@@ -1,4 +1,3 @@
-// ── State ────────────────────────────────────────────────────────────────────
 var screen = "loading";
 var particles = [];
 var images = [];
@@ -12,14 +11,12 @@ var imageFiles = [
 var orbitAngle = 0;
 var tableauDiv = null;
 
-// ── Preload (p5 built-in — runs before setup, no async needed) ───────────────
 function preload() {
   for (var i = 0; i < imageFiles.length; i++) {
     images.push(loadImage(imageFiles[i]));
   }
 }
 
-// ── Setup ────────────────────────────────────────────────────────────────────
 function setup() {
   var canvas = createCanvas(windowWidth, windowHeight);
   canvas.position(0, 0);
@@ -37,7 +34,6 @@ function setup() {
   screen = "start";
 }
 
-// ── Tableau overlay ──────────────────────────────────────────────────────────
 function createTableauOverlay() {
   tableauDiv = createDiv("");
   tableauDiv.id("tableau-overlay");
@@ -56,71 +52,39 @@ function createTableauOverlay() {
   tableauDiv.style("box-sizing", "border-box");
   tableauDiv.style("pointer-events", "auto");
 
-  // FIX: replaced CSS `gap` (not supported in Chrome 87 flexbox) with
-  // equivalent margins on the inner elements.
-  // NOTE: onclick uses window.goBackFromTableau so it resolves at call-time,
-  // not at parse-time — safe even though the function is defined below.
   tableauDiv.html('\
     <div style="width:100%;max-width:1100px;margin:0 auto;">\
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;">\
-        <button onclick="window.goBackFromTableau()" style="\
-          background:rgba(0,0,0,0.6);\
-          color:#c8c8dc;\
-          border:none;\
-          padding:8px 18px;\
-          border-radius:8px;\
-          font-size:14px;\
-          cursor:pointer;\
-          font-family:monospace;\
-          margin-right:12px;\
-        ">\u2190 BACK</button>\
+        <button onclick="window.goBackFromTableau()" style="background:rgba(0,0,0,0.6);color:#c8c8dc;border:none;padding:8px 18px;border-radius:8px;font-size:14px;cursor:pointer;font-family:monospace;margin-right:12px;">\u2190 BACK</button>\
         <h2 style="color:#ffc832;font-family:monospace;margin:0;">\uD83D\uDCCA Tableau Visualizations</h2>\
         <div style="width:80px;"></div>\
       </div>\
-      <p style="color:#c8c8dc;font-family:monospace;text-align:center;margin-bottom:24px;font-size:14px;">\
-        Scooter data visualizations \u2014 try interacting directly below. If embedding blocks interaction, use the open-in-new-tab buttons.\
-      </p>\
+      <p style="color:#c8c8dc;font-family:monospace;text-align:center;margin-bottom:24px;font-size:14px;">Scooter data visualizations \u2014 try interacting directly below. If embedding blocks interaction, use the open-in-new-tab buttons.</p>\
       <div style="margin-bottom:40px;">\
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;">\
-          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Radial Chart</h3>\
-          <a href="https://public.tableau.com/views/Radial_17754458389600/Radial?:showVizHome=no"\
-             target="_blank" rel="noopener noreferrer"\
-             style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
+          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Radial Dashboard</h3>\
+          <a href="https://public.tableau.com/views/Radial_17754458389600/Dashboard1?:showVizHome=no" target="_blank" rel="noopener noreferrer" style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
         </div>\
-        <iframe src="https://public.tableau.com/views/Radial_17754458389600/Radial?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"\
-          width="100%" height="600px"\
-          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"\
-          allowfullscreen></iframe>\
+        <iframe src="https://public.tableau.com/views/Radial_17754458389600/Dashboard1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes" width="100%" height="700px" style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;" allowfullscreen></iframe>\
       </div>\
       <div style="margin-bottom:40px;">\
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;">\
-          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Scooter Data</h3>\
-          <a href="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft/Sheet1?:showVizHome=no"\
-             target="_blank" rel="noopener noreferrer"\
-             style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
+          <h3 style="color:#ffc832;font-family:monospace;margin:0;">Parked Scooter Locations</h3>\
+          <a href="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft2/ParkedScooterLocations?:showVizHome=no" target="_blank" rel="noopener noreferrer" style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
         </div>\
-        <iframe src="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"\
-          width="100%" height="600px"\
-          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"\
-          allowfullscreen></iframe>\
+        <iframe src="https://public.tableau.com/views/Ex4_3_Scooter_Data_Draft2/ParkedScooterLocations?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes" width="100%" height="700px" style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;" allowfullscreen></iframe>\
       </div>\
       <div style="margin-bottom:40px;">\
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;">\
           <h3 style="color:#ffc832;font-family:monospace;margin:0;">Building Scooter Parking Comparison</h3>\
-          <a href="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:showVizHome=no"\
-             target="_blank" rel="noopener noreferrer"\
-             style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
+          <a href="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:showVizHome=no" target="_blank" rel="noopener noreferrer" style="background:#ffc832;color:#111;text-decoration:none;font-family:monospace;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;display:inline-block;margin-left:12px;">Open frame in new tab \u2197</a>\
         </div>\
-        <iframe src="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes"\
-          width="100%" height="600px"\
-          style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;"\
-          allowfullscreen></iframe>\
+        <iframe src="https://public.tableau.com/views/E4_3datavisualization/Sheet1?:embed=y&:showVizHome=no&:display_count=yes&:toolbar=yes" width="100%" height="600px" style="border:2px solid #ffc832;border-radius:8px;background:white;pointer-events:auto;" allowfullscreen></iframe>\
       </div>\
     </div>\
   ');
 }
 
-// Exposed on window so the inline onclick in the HTML string can reach it
 window.goBackFromTableau = function () {
   hideTableauOverlay();
   screen = "menu";
@@ -142,7 +106,6 @@ function hideTableauOverlay() {
   }
 }
 
-// ── Draw dispatcher ──────────────────────────────────────────────────────────
 function draw() {
   background(15, 15, 25);
 
@@ -165,7 +128,6 @@ function draw() {
   }
 }
 
-// ── Start screen ─────────────────────────────────────────────────────────────
 function showStartScreen() {
   for (var i = 0; i < particles.length; i++) {
     particles[i].update();
@@ -199,7 +161,7 @@ function showStartScreen() {
   textAlign(CENTER, CENTER);
   textStyle(NORMAL);
   noStroke();
-  text("\uD83D\uDED4", 0, 0); // 🛴
+  text("\uD83D\uDED4", 0, 0);
   pop();
 
   textSize(32);
@@ -225,7 +187,6 @@ function showStartScreen() {
   text("CLICK ANYWHERE TO BEGIN", width / 2, height / 2 + 90);
 }
 
-// ── Menu screen ───────────────────────────────────────────────────────────────
 function showMenuScreen() {
   for (var i = 0; i < particles.length; i++) {
     particles[i].update();
@@ -244,7 +205,7 @@ function showMenuScreen() {
 
   drawMenuButton(
     btn1,
-    "\uD83D\uDCF8", // 📸
+    "\uD83D\uDCF8",
     "View Photos",
     "Browse our scooter pictures",
     mouseX > btn1.x && mouseX < btn1.x + btn1.w && mouseY > btn1.y && mouseY < btn1.y + btn1.h
@@ -252,7 +213,7 @@ function showMenuScreen() {
 
   drawMenuButton(
     btn2,
-    "\uD83D\uDCCA", // 📊
+    "\uD83D\uDCCA",
     "View Data",
     "Explore Tableau visualizations",
     mouseX > btn2.x && mouseX < btn2.x + btn2.w && mouseY > btn2.y && mouseY < btn2.y + btn2.h
@@ -296,7 +257,6 @@ function drawMenuButton(btn, emoji, label, sublabel, hovered) {
 }
 
 function getMenuBtn1() {
-  // FIX: use Math.min() instead of p5's min() for non-array two-argument form
   var btnW = Math.min(240, width * 0.35);
   var btnH = 160;
   var gap = 40;
@@ -306,7 +266,6 @@ function getMenuBtn1() {
 }
 
 function getMenuBtn2() {
-  // FIX: use Math.min() instead of p5's min() for non-array two-argument form
   var btnW = Math.min(240, width * 0.35);
   var btnH = 160;
   var gap = 40;
@@ -315,7 +274,6 @@ function getMenuBtn2() {
   return { x: startX + btnW + gap, y: height / 2 - btnH / 2, w: btnW, h: btnH };
 }
 
-// ── Scooter ticker ────────────────────────────────────────────────────────────
 function drawScooters() {
   var speed = 1.5;
   var count = 6;
@@ -340,7 +298,6 @@ function drawScooters() {
   }
 }
 
-// ── Grid helpers ─────────────────────────────────────────────────────────────
 function getGridRects() {
   var rects = [];
   var cols = 2;
@@ -362,7 +319,6 @@ function getGridRects() {
   return rects;
 }
 
-// ── Grid screen ───────────────────────────────────────────────────────────────
 function showGrid() {
   if (images.length === 0) return;
 
@@ -377,7 +333,6 @@ function showGrid() {
 
   var rects = getGridRects();
 
-  // FIX: use Math.min() instead of p5's min() for non-array two-argument form
   for (var i = 0; i < Math.min(images.length, 4); i++) {
     var r = rects[i];
     var img = images[i];
@@ -438,7 +393,6 @@ function showGrid() {
   text("\u2190 BACK", 55, 31);
 }
 
-// ── Gallery screen ────────────────────────────────────────────────────────────
 function showGallery() {
   if (images.length === 0) return;
   if (currentIndex >= images.length) currentIndex = 0;
@@ -504,11 +458,9 @@ function showGallery() {
   text("\u2190 BACK", 55, 31);
 }
 
-// ── Mouse handler ─────────────────────────────────────────────────────────────
 function mousePressed() {
   if (screen === "start") {
     screen = "menu";
-
   } else if (screen === "menu") {
     var btn1 = getMenuBtn1();
     var btn2 = getMenuBtn2();
@@ -519,7 +471,6 @@ function mousePressed() {
       screen = "tableau";
       showTableauOverlay();
     }
-
   } else if (screen === "grid") {
     if (mouseX > 15 && mouseX < 95 && mouseY > 15 && mouseY < 47) {
       screen = "menu";
@@ -535,7 +486,6 @@ function mousePressed() {
         return;
       }
     }
-
   } else if (screen === "gallery") {
     var nextIndex = currentIndex + 1;
     if (nextIndex < images.length) {
@@ -556,12 +506,10 @@ function mousePressed() {
   }
 }
 
-// ── Window resize ─────────────────────────────────────────────────────────────
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-// ── Particle class ────────────────────────────────────────────────────────────
 function Particle() {
   this.reset = function () {
     this.x = random(width);
@@ -578,6 +526,7 @@ function Particle() {
   this.update = function () {
     this.y += this.speedY;
     this.x += this.speedX;
+
     if (this.y < 0 || this.x < 0 || this.x > width) {
       this.reset();
       this.y = height;
